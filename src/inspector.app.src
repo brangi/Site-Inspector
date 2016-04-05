@@ -1,0 +1,12 @@
+{application, inspector,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { inspector_app, []}},
+  {env, []}
+ ]}.
