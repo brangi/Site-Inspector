@@ -19,3 +19,9 @@ get_all_sites(Device, Accum) ->
 
 
 
+
+schedule(Seconds)->
+    InspectJob = {{once, Seconds},
+        {inspector, resolve_inspection, []}},
+    erlcron:cron(InspectJob).
+
