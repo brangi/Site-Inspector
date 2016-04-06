@@ -17,28 +17,35 @@ get_all_sites(Device, Accum) ->
 check_content(Data, Req) ->
     Patterns = binary:split(list_to_binary(Req), <<" ">>),
     case binary:match(Data, Patterns,[]) of
-        {_Pat1,_Pat2} ->
-            found;
         nomatch ->
             not_found;
         _->
-            not_found
+            found
     end.
 
 find_date(List) ->
     case lists:keyfind(<<"Date">>, 1, List) of
         {<<"Date">>, Result} -> Result;
-        false -> no_date
+        false -> <<"No date">>
     end.
 
 
 resolve_inspection(Sec) ->
     Sites = readsites(),
+    {ok, Write} = file:open("log", write ),
     lists:foreach(fun(X)->
                 [Req, Site] = string:tokens(X, ","),
-                Result = request(Site, Req),
-                io:format("Checking ~p~n", [Result])
+                Response = request(Site, Req),
+                {Item1, Item2, Item3} = Response,
+                io:format("Checking ~s ~p~n", [Site, Response]), 
+                RestCode = " Respose code: " ++ integer_to_list(Item1),
+                CriteriaReq = " Critera requierment: " ++ atom_to_list(Item2),
+                LogResult = "Checking " ++ Site ++ " - . Results: " ++ 
+                            RestCode ++
+                            CriteriaReq ++ Item3,
+                io:format(Write, "~s~n", [LogResult])
         end, Sites),
+        file:close(Write),
         timer:sleep(sec_to_mil(Sec)),
         resolve_inspection(Sec).
 
@@ -59,7 +66,7 @@ request(Site, Req) ->
     %Calcualte the response time, extract response time from server and compare with
     %request timestamp
     _ReponseDate = find_date(H),
-    {S, Check, _ReponseDate}.
+    {S, Check, binary_to_list(_ReponseDate)}.
 
 run_inspection(Seconds)->
     InspectJob = {{once, Seconds},
