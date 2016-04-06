@@ -1,9 +1,8 @@
 -module(inspector).
 -compile(export_all).
 -define(P , "sites").
--export([readlines/0]).
 
-readlines() ->
+readsites() ->
     {ok, Device} = file:open(?P, [read]),
     get_all_sites(Device, []).
     
@@ -25,7 +24,28 @@ check_content(Data, Req) ->
         _->
             not_found
     end.
-            
+
+find_date(List) ->
+    case lists:keyfind(<<"Date">>, 1, List) of
+        {<<"Date">>, Result} -> Result;
+        false -> no_date
+    end.
+
+
+resolve_inspection(Sec) ->
+    Sites = readsites(),
+    lists:foreach(fun(X)->
+                [Req, Site] = string:tokens(X, ","),
+                Result = request(Site, Req),
+                io:format("Checking ~p~n", [Result])
+        end, Sites),
+        timer:sleep(sec_to_mil(Sec)),
+        resolve_inspection(Sec).
+
+
+sec_to_mil(Sec)->
+    Sec * 1000.
+
 request(Site, Req) ->
     Method = get,
     URL = Site,
@@ -38,11 +58,11 @@ request(Site, Req) ->
     Check = check_content(Data, Req),
     %Calcualte the response time, extract response time from server and compare with
     %request timestamp
-    {<<"Date">>, Time} = lists:keyfind(<<"Date">>, 1, H),
-    {S,Check,Time}.
+    _ReponseDate = find_date(H),
+    {S, Check, _ReponseDate}.
 
-schedule(Seconds)->
+run_inspection(Seconds)->
     InspectJob = {{once, Seconds},
         {inspector, resolve_inspection, []}},
     erlcron:cron(InspectJob).
-
+ 
