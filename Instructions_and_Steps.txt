@@ -1,0 +1,62 @@
+# Site-Inspector
+
+Dependecy to run the program, install erlang R16 at newest
+
+Download the Site-Inspector.zip file
+
+unzip the file 
+
+#Use command line
+
+//Change to project directory
+
+$ cd Site-Inspector
+
+//Run erlang shell
+
+$ erl -pa ebin deps/*/ebin
+
+// Start the inspector application
+
+Eshell V6.4  (abort with ^G)
+1> application:start(inspector).
+
+// Execute the site inspection
+
+
+Eshell V6.4  (abort with ^G)
+1> application:start(inspector).
+ok
+2> inspector:resolve_inspection(10).
+
+The number 10 indicates de checking period in seconds
+
+// When desired quit the program and exit the shell with Ctrl + C (two times)
+
+$ erl -pa ebin deps/*/ebin
+Erlang/OTP 17 [erts-6.4] [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Eshell V6.4  (abort with ^G)
+1> application:start(inspector).
+ok
+2> inspector:resolve_inspection(10).
+Checking http://www.facebook.com/ {200,found,"0.0550"}
+Checking http://www.twitter.com/ {200,not_found,"Not available"}
+Checking http://www.linkedin.com/ {200,found,"0.0550"}
+Checking http://www.pinterest.com/ {200,found,"0.0550"}
+Checking http://plus.google.com/ {200,found,"0.0550"}
+Checking http://www.tumblr.com/ {200,found,"0.0550"}
+Checking http://www.instagram.com/ {200,not_found,"0.0560"}
+Checking http://www.flickr.com/ {200,found,"0.0550"}
+Checking http://www.vine.co/ {200,not_found,"0.0540"}
+Checking http://www.meetme.com/ {200,found,"0.0560"}
+
+BREAK: (a)bort (c)ontinue (p)roc info (i)nfo (l)oaded
+       (v)ersion (k)ill (D)b-tables (d)istribution
+Gibrans-MacBook-Pro:Site-Inspector brangikitchen$ ls
+README.md        deps            ebin            log             rebar.config    sites           src
+Gibrans-MacBook-Pro:Site-Inspector brangikitchen$ 
+
+// Log file can be found in the root directory "log"
+
+
